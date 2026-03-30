@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+// eslint-disable-next-line
 const API = process.env.REACT_APP_API;
 
 function getDaysUntilBirthday(dateStr) {
@@ -98,25 +99,32 @@ function Badge({ days }) {
 }
 
 export default function App() {
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [loginForm, setLoginForm] = useState({ usuario: '', password: '' });
   const [personas, setPersonas] = useState([]);
   const [view, setView] = useState("lista"); // lista | form | detalle
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ nombre: "", apodo: "", fecha: "", gustos: "", notas: "", foto: "", fotoPos: "50% 50%" });
   const [search, setSearch] = useState("");
   const [editId, setEditId] = useState(null);
-  const [tick, setTick] = useState(0);
+  // eslint-disable-next-line
+const [tick, setTick] = useState(0);;
 
   useEffect(() => {
     const interval = setInterval(() => setTick(t => t + 1), 1000);
     return () => clearInterval(interval);
   }, []);
 
- useEffect(() => {
-  fetch("https://cumpleanos-app.onrender.com/personas")
+useEffect(() => {
+  if (!loggedIn) return;
+  fetch(`${API}/personas`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
     .then(r => r.json())
     .then(data => setPersonas(data))
     .catch(err => console.error(err));
-}, []);
+}, [loggedIn]);
 
 const save = (data) => {
   setPersonas(data);
@@ -156,7 +164,60 @@ const save = (data) => {
   };
 
   const persona = selected ? personas.find(p => p.id === selected) : null;
-
+if (!loggedIn) return (
+  <div style={{
+    minHeight: "100vh", background: "#0f0f1e",
+    fontFamily: "'DM Sans', sans-serif",
+    display: "flex", alignItems: "center", justifyContent: "center"
+  }}>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <div style={{ background: "#1a1a2e", borderRadius: 20, padding: 32, width: 300, border: "1px solid #2a2a4e" }}>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <div style={{ fontSize: 40 }}>🎂</div>
+        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#fff", marginTop: 8 }}>
+          Cumpleaños
+        </div>
+        <div style={{ fontSize: 12, color: "#6666aa", marginTop: 4 }}>Inicia sesión para continuar</div>
+      </div>
+      {["usuario", "password"].map(f => (
+        <div key={f} style={{ marginBottom: 14 }}>
+          <input
+            type={f === "password" ? "password" : "text"}
+            placeholder={f === "usuario" ? "Usuario" : "Contraseña"}
+            value={loginForm[f]}
+            onChange={e => setLoginForm(l => ({ ...l, [f]: e.target.value }))}
+            style={{
+              width: "100%", background: "#0f0f1e", border: "1px solid #2a2a4e",
+              borderRadius: 10, padding: "12px 14px", color: "#e8e8f0",
+              fontSize: 14, boxSizing: "border-box", outline: "none"
+            }}
+          />
+        </div>
+      ))}
+      <button onClick={async () => {
+        const r = await fetch(`${API}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(loginForm)
+        });
+        const data = await r.json();
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          setToken(data.token);
+          setLoggedIn(true);
+        } else {
+          alert("Usuario o contraseña incorrectos");
+        }
+      }} style={{
+        width: "100%", background: "linear-gradient(135deg, #6C63FF, #FF6B9D)",
+        border: "none", borderRadius: 12, padding: 14,
+        color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer"
+      }}>
+        Entrar 🔐
+      </button>
+    </div>
+  </div>
+);
   return (
     <div style={{
       minHeight: "100vh", background: "#0f0f1e",
