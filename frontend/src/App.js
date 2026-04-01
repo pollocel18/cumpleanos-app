@@ -388,9 +388,9 @@ export default function App() {
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       <div style={{ background: "#1a1a2e", borderRadius: 20, padding: 32, width: 300, border: "1px solid #2a2a4e" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ fontSize: 40 }}>🎂</div>
+          <div style={{ fontSize: 40 }}>🏛️</div>
           <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#fff", marginTop: 8 }}>
-            Cumpleaños
+            La Bóveda de Cronos
           </div>
           <div style={{ fontSize: 12, color: "#6666aa", marginTop: 4 }}>Inicia sesión para continuar</div>
         </div>
@@ -450,10 +450,10 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: "#fff" }}>
-              🎂 Cumpleaños
+              🏛️ La Bóveda de Cronos
             </div>
             <div style={{ fontSize: 12, color: "#6666aa", marginTop: 2 }}>
-              {personas.length} {personas.length === 1 ? "persona" : "personas"} guardadas
+              by Arturo Moreno · {personas.length} {personas.length === 1 ? "persona" : "personas"} guardadas
             </div>
           </div>
           <button onClick={() => { setForm({ nombre: "", fecha: "", gustos: "", notas: "" }); setEditId(null); setView("form"); }}
