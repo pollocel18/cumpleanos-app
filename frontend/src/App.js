@@ -604,7 +604,6 @@ const [enRelacion, setEnRelacion] = useState(false);
           {[
             { label: "Nombre *", key: "nombre", type: "text", placeholder: "¿Cómo se llama?" },
             { label: "Apodo / Como se le llama", key: "apodo", type: "text", placeholder: "Ej: Güero, Chuy, Lore..." },
-            { label: "Fecha de nacimiento *", key: "fecha", type: "date", placeholder: "" },
             { label: "Gustos / Intereses", key: "gustos", type: "text", placeholder: "Café, música, libros..." },
             { label: "Notas", key: "notas", type: "text", placeholder: "Cualquier cosa que quieras recordar..." },
           ].map(f => (
@@ -623,6 +622,31 @@ const [enRelacion, setEnRelacion] = useState(false);
               />
             </div>
           ))}
+
+          {/* Campo fecha separado */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: "#6666aa", fontWeight: 600, marginBottom: 6, letterSpacing: 0.5 }}>Fecha de nacimiento *</div>
+            <input
+              type="date"
+              value={form.fecha}
+              onChange={e => {
+                const val = e.target.value;
+                // Normalizar formato YYYY-MM-DD
+                const match = val.match(/(\d{4})-(\d{2})-(\d{2})/);
+                if (match) {
+                  setForm({ ...form, fecha: `${match[1]}-${match[2]}-${match[3]}` });
+                } else {
+                  setForm({ ...form, fecha: val });
+                }
+              }}
+              style={{
+                width: "100%", background: "#1a1a2e", border: "1px solid #2a2a4e",
+                borderRadius: 10, padding: "12px 14px", color: "#e8e8f0",
+                fontSize: 14, boxSizing: "border-box", outline: "none",
+                WebkitAppearance: "none", appearance: "none"
+              }}
+            />
+          </div>
 
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 12, color: "#6666aa", fontWeight: 600, marginBottom: 6, letterSpacing: 0.5 }}>Foto (opcional)</div>
