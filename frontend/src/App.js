@@ -339,31 +339,35 @@ const [enRelacion, setEnRelacion] = useState(false);
   const upcoming = sorted.filter(p => p.days <= 30);
 
   const handleSubmit = async () => {
-    console.log("handleSubmit llamado", form);
     if (!form.nombre.trim() || !form.fecha) {
       alert("Faltan datos: nombre=" + form.nombre + " fecha=" + form.fecha);
       return;
     }
-    if (editId !== null) {
-      const updated = await fetch(`${API}/personas/${editId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form)
-      }).then(r => r.json())
-        .then(data => ({ ...data, fecha: new Date(data.fecha).toISOString().split("T")[0] }));
-      setPersonas(personas.map(p => p.id === editId ? updated : p));
-      setEditId(null);
-    } else {
-      const nuevo = await fetch(`${API}/personas`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ ...form, color: COLORS[personas.length % COLORS.length] })
-      }).then(r => r.json())
-        .then(data => ({ ...data, fecha: new Date(data.fecha).toISOString().split("T")[0] }));
-      setPersonas([...personas, nuevo]);
+    try {
+      alert("Pasó validación, guardando...");
+      if (editId !== null) {
+        const updated = await fetch(`${API}/personas/${editId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify(form)
+        }).then(r => r.json())
+          .then(data => ({ ...data, fecha: new Date(data.fecha).toISOString().split("T")[0] }));
+        setPersonas(personas.map(p => p.id === editId ? updated : p));
+        setEditId(null);
+      } else {
+        const nuevo = await fetch(`${API}/personas`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ ...form, color: COLORS[personas.length % COLORS.length] })
+        }).then(r => r.json())
+          .then(data => ({ ...data, fecha: new Date(data.fecha).toISOString().split("T")[0] }));
+        setPersonas([...personas, nuevo]);
+      }
+      setForm({ nombre: "", apodo: "", fecha: "", gustos: "", notas: "", foto: "", fotoPos: "50% 50%" });
+      setView("lista");
+    } catch(err) {
+      alert("Error: " + err.message);
     }
-    setForm({ nombre: "", apodo: "", fecha: "", gustos: "", notas: "", foto: "", fotoPos: "50% 50%" });
-    setView("lista");
   };
 
   const handleDelete = async (id) => {
