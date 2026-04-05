@@ -344,27 +344,27 @@ const [enRelacion, setEnRelacion] = useState(false);
       return;
     }
     try {
-      alert("Pasó validación, guardando...");
+      alert("Fecha que se envía: " + form.fecha);
+      const endpoint = editId !== null ? `${API}/personas/${editId}` : `${API}/personas`;
+      const method = editId !== null ? "PUT" : "POST";
+      const body = editId !== null ? form : { ...form, color: COLORS[personas.length % COLORS.length] };
+      
+      const r = await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body)
+      });
+      const text = await r.text();
+      alert("Respuesta raw: " + text);
+      const data = JSON.parse(text);
+      const fechaLimpia = data.fecha ? data.fecha.substring(0, 10) : form.fecha;
+      const persona = { ...data, fecha: fechaLimpia };
+      
       if (editId !== null) {
-        const updated = await fetch(`${API}/personas/${editId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify(form)
-        }).then(r => r.json())
-          .then(data => ({ ...data, fecha: data.fecha.split("T")[0] }));
-        setPersonas(personas.map(p => p.id === editId ? updated : p));
+        setPersonas(personas.map(p => p.id === editId ? persona : p));
         setEditId(null);
       } else {
-        const nuevo = await fetch(`${API}/personas`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ ...form, color: COLORS[personas.length % COLORS.length] })
-        }).then(r => r.json())
-          .then(data => {
-          alert("Respuesta servidor: " + JSON.stringify(data));
-          return { ...data, fecha: data.fecha ? data.fecha.split("T")[0] : "" };
-        });
-        setPersonas([...personas, nuevo]);
+        setPersonas([...personas, persona]);
       }
       setForm({ nombre: "", apodo: "", fecha: "", gustos: "", notas: "", foto: "", fotoPos: "50% 50%" });
       setView("lista");
