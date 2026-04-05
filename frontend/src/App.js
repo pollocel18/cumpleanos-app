@@ -339,7 +339,11 @@ const [enRelacion, setEnRelacion] = useState(false);
   const upcoming = sorted.filter(p => p.days <= 30);
 
   const handleSubmit = async () => {
-    if (!form.nombre.trim() || !form.fecha) return;
+    console.log("handleSubmit llamado", form);
+    if (!form.nombre.trim() || !form.fecha) {
+      alert("Faltan datos: nombre=" + form.nombre + " fecha=" + form.fecha);
+      return;
+    }
     if (editId !== null) {
       const updated = await fetch(`${API}/personas/${editId}`, {
         method: "PUT",
