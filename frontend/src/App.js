@@ -360,7 +360,10 @@ const [enRelacion, setEnRelacion] = useState(false);
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ ...form, color: COLORS[personas.length % COLORS.length] })
         }).then(r => r.json())
-          .then(data => ({ ...data, fecha: data.fecha.split("T")[0] }));
+          .then(data => {
+          alert("Respuesta servidor: " + JSON.stringify(data));
+          return { ...data, fecha: data.fecha ? data.fecha.split("T")[0] : "" };
+        });
         setPersonas([...personas, nuevo]);
       }
       setForm({ nombre: "", apodo: "", fecha: "", gustos: "", notas: "", foto: "", fotoPos: "50% 50%" });
