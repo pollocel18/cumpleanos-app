@@ -338,13 +338,9 @@ const [enRelacion, setEnRelacion] = useState(false);
 
   const upcoming = sorted.filter(p => p.days <= 30);
 
-  const handleSubmit = async () => {
-    if (!form.nombre.trim() || !form.fecha) {
-      alert("Faltan datos: nombre=" + form.nombre + " fecha=" + form.fecha);
-      return;
-    }
+ const handleSubmit = async () => {
+    if (!form.nombre.trim() || !form.fecha) return;
     try {
-      alert("Fecha que se envía: " + form.fecha);
       const endpoint = editId !== null ? `${API}/personas/${editId}` : `${API}/personas`;
       const method = editId !== null ? "PUT" : "POST";
       const body = editId !== null ? form : { ...form, color: COLORS[personas.length % COLORS.length] };
@@ -354,9 +350,7 @@ const [enRelacion, setEnRelacion] = useState(false);
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(body)
       });
-      const text = await r.text();
-      alert("Respuesta raw: " + text);
-      const data = JSON.parse(text);
+      const data = await r.json();
       const fechaLimpia = data.fecha ? data.fecha.substring(0, 10) : form.fecha;
       const persona = { ...data, fecha: fechaLimpia };
       
@@ -369,7 +363,7 @@ const [enRelacion, setEnRelacion] = useState(false);
       setForm({ nombre: "", apodo: "", fecha: "", gustos: "", notas: "", foto: "", fotoPos: "50% 50%" });
       setView("lista");
     } catch(err) {
-      alert("Error: " + err.message);
+      console.error(err);
     }
   };
 
