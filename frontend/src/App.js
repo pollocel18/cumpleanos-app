@@ -274,7 +274,9 @@ function Badge({ days }) {
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [usuario, setUsuario] = useState(localStorage.getItem('usuario') || '');
   const [loginForm, setLoginForm] = useState({ usuario: '', password: '' });
+  const [authMode, setAuthMode] = useState("login");
   const [personas, setPersonas] = useState([]);
   const [view, setView] = useState("lista");
   const [selected, setSelected] = useState(null);
@@ -286,6 +288,13 @@ export default function App() {
   const [capsulaError, setCapsulaError] = useState(null);
   // eslint-disable-next-line
   const [tick, setTick] = useState(0);
+  const [pareja, setPareja] = useState(null);
+const [viewPareja, setViewPareja] = useState(false);
+const [parejaForm, setParejaForm] = useState({
+  persona_id: "", fecha_conocieron: "", lugar_conocieron: "",
+  fecha_compromiso: "", fecha_boda: "", detalles_importantes: ""
+});
+const [enRelacion, setEnRelacion] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => setTick(t => t + 1), 1000);
@@ -299,6 +308,26 @@ export default function App() {
     })
       .then(r => r.json())
       .then(data => setPersonas(data.map(p => ({ ...p, fecha: new Date(p.fecha).toISOString().split("T")[0] }))))
+      .catch(err => console.error(err));
+
+    fetch(`${API}/pareja`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data) {
+          setPareja(data);
+          setEnRelacion(true);
+          setParejaForm({
+            persona_id: data.persona_id || "",
+            fecha_conocieron: data.fecha_conocieron ? data.fecha_conocieron.split("T")[0] : "",
+            lugar_conocieron: data.lugar_conocieron || "",
+            fecha_compromiso: data.fecha_compromiso ? data.fecha_compromiso.split("T")[0] : "",
+            fecha_boda: data.fecha_boda ? data.fecha_boda.split("T")[0] : "",
+            detalles_importantes: data.detalles_importantes || ""
+          });
+        }
+      })
       .catch(err => console.error(err));
   }, [loggedIn]);
 
@@ -380,59 +409,74 @@ export default function App() {
   const persona = selected ? personas.find(p => p.id === selected) : null;
 
   if (!loggedIn) return (
-    <div style={{
-      minHeight: "100vh", background: "#0f0f1e",
-      fontFamily: "'DM Sans', sans-serif",
-      display: "flex", alignItems: "center", justifyContent: "center"
-    }}>
-      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
-      <div style={{ background: "#1a1a2e", borderRadius: 20, padding: 32, width: 300, border: "1px solid #2a2a4e" }}>
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ fontSize: 40 }}>🏛️</div>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#fff", marginTop: 8 }}>
-            La Bóveda de Cronos
-          </div>
-          <div style={{ fontSize: 12, color: "#6666aa", marginTop: 4 }}>Inicia sesión para continuar</div>
+  <div style={{
+    minHeight: "100vh", background: "#0f0f1e",
+    fontFamily: "'DM Sans', sans-serif",
+    display: "flex", alignItems: "center", justifyContent: "center"
+  }}>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <div style={{ background: "#1a1a2e", borderRadius: 20, padding: 32, width: 300, border: "1px solid #2a2a4e" }}>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <div style={{ fontSize: 40 }}>🏛️</div>
+        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#fff", marginTop: 8 }}>
+          La Bóveda de Cronos
         </div>
-        {["usuario", "password"].map(f => (
-          <div key={f} style={{ marginBottom: 14 }}>
-            <input
-              type={f === "password" ? "password" : "text"}
-              placeholder={f === "usuario" ? "Usuario" : "Contraseña"}
-              value={loginForm[f]}
-              onChange={e => setLoginForm(l => ({ ...l, [f]: e.target.value }))}
-              style={{
-                width: "100%", background: "#0f0f1e", border: "1px solid #2a2a4e",
-                borderRadius: 10, padding: "12px 14px", color: "#e8e8f0",
-                fontSize: 14, boxSizing: "border-box", outline: "none"
-              }}
-            />
-          </div>
-        ))}
-        <button onClick={async () => {
-          const r = await fetch(`${API}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(loginForm)
-          });
-          const data = await r.json();
-          if (data.token) {
-            localStorage.setItem('token', data.token);
-            setToken(data.token);
-            setLoggedIn(true);
-          } else {
-            alert("Usuario o contraseña incorrectos");
-          }
-        }} style={{
-          width: "100%", background: "linear-gradient(135deg, #6C63FF, #FF6B9D)",
-          border: "none", borderRadius: 12, padding: 14,
-          color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer"
-        }}>
-          Entrar 🔐
-        </button>
+        <div style={{ display: "flex", marginTop: 16, background: "#0f0f1e", borderRadius: 10, padding: 4 }}>
+          {["login", "registro"].map(mode => (
+            <button key={mode} onClick={() => setAuthMode(mode)} style={{
+              flex: 1, padding: "8px 0", border: "none", borderRadius: 8, cursor: "pointer",
+              background: authMode === mode ? "linear-gradient(135deg, #6C63FF, #FF6B9D)" : "transparent",
+              color: authMode === mode ? "#fff" : "#6666aa", fontWeight: 700, fontSize: 13
+            }}>
+              {mode === "login" ? "Iniciar sesión" : "Registrarse"}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {["usuario", "password"].map(f => (
+        <div key={f} style={{ marginBottom: 14 }}>
+          <input
+            type={f === "password" ? "password" : "text"}
+            placeholder={f === "usuario" ? "Usuario" : "Contraseña"}
+            value={loginForm[f]}
+            onChange={e => setLoginForm(l => ({ ...l, [f]: e.target.value }))}
+            style={{
+              width: "100%", background: "#0f0f1e", border: "1px solid #2a2a4e",
+              borderRadius: 10, padding: "12px 14px", color: "#e8e8f0",
+              fontSize: 14, boxSizing: "border-box", outline: "none"
+            }}
+          />
+        </div>
+      ))}
+
+      <button onClick={async () => {
+        const endpoint = authMode === "login" ? "/login" : "/register";
+        const r = await fetch(`${API}${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(loginForm)
+        });
+        const data = await r.json();
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('usuario', data.usuario);
+          setToken(data.token);
+          setUsuario(data.usuario);
+          setLoggedIn(true);
+        } else {
+          alert(data.error || "Error al procesar la solicitud");
+        }
+      }} style={{
+        width: "100%", background: "linear-gradient(135deg, #6C63FF, #FF6B9D)",
+        border: "none", borderRadius: 12, padding: 14,
+        color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer"
+      }}>
+        {authMode === "login" ? "Entrar 🔐" : "Crear cuenta ✨"}
+      </button>
     </div>
-  );
+  </div>
+);
 
   return (
     <div style={{
@@ -453,9 +497,24 @@ export default function App() {
               🏛️ La Bóveda de Cronos
             </div>
             <div style={{ fontSize: 12, color: "#6666aa", marginTop: 2 }}>
-              by Arturo Moreno · {personas.length} {personas.length === 1 ? "persona" : "personas"} guardadas
-            </div>
+   by -=Arturo Moreno=- · 👤 {usuario} · {personas.length} {personas.length === 1 ? "persona" : "personas"} guardadas
+</div>
           </div>
+          <button onClick={() => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('usuario');
+  setToken('');
+  setUsuario('');
+  setLoggedIn(false);
+  setPersonas([]);
+}} style={{
+  background: "rgba(255,107,107,0.15)", border: "1px solid #FF6B6B44",
+  borderRadius: 10, padding: "6px 12px", color: "#FF6B6B",
+  fontSize: 12, fontWeight: 700, cursor: "pointer", marginRight: 8
+}}>
+  Salir
+</button>
+
           <button onClick={() => { setForm({ nombre: "", fecha: "", gustos: "", notas: "" }); setEditId(null); setView("form"); }}
             style={{
               background: "linear-gradient(135deg, #6C63FF, #FF6B9D)",
@@ -484,6 +543,7 @@ export default function App() {
           </div>
         )}
       </div>
+      
 
       {/* Vista lista */}
       {view === "lista" && (
@@ -787,6 +847,7 @@ export default function App() {
                   </div>
                 )}
               </div>
+
 
               {/* Zodíaco */}
               {zodiacData && (
