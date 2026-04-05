@@ -307,7 +307,7 @@ const [enRelacion, setEnRelacion] = useState(false);
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())
-      .then(data => setPersonas(data.map(p => ({ ...p, fecha: new Date(p.fecha).toISOString().split("T")[0] }))))
+      .then(data => setPersonas(data.map(p => ({ ...p, fecha: p.fecha.split("T")[0] }))))
       .catch(err => console.error(err));
 
     fetch(`${API}/pareja`, {
@@ -351,7 +351,7 @@ const [enRelacion, setEnRelacion] = useState(false);
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify(form)
         }).then(r => r.json())
-          .then(data => ({ ...data, fecha: new Date(data.fecha).toISOString().split("T")[0] }));
+          .then(data => ({ ...data, fecha: data.fecha.split("T")[0] }));
         setPersonas(personas.map(p => p.id === editId ? updated : p));
         setEditId(null);
       } else {
@@ -360,7 +360,7 @@ const [enRelacion, setEnRelacion] = useState(false);
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ ...form, color: COLORS[personas.length % COLORS.length] })
         }).then(r => r.json())
-          .then(data => ({ ...data, fecha: new Date(data.fecha).toISOString().split("T")[0] }));
+          .then(data => ({ ...data, fecha: data.fecha.split("T")[0] }));
         setPersonas([...personas, nuevo]);
       }
       setForm({ nombre: "", apodo: "", fecha: "", gustos: "", notas: "", foto: "", fotoPos: "50% 50%" });
