@@ -666,7 +666,21 @@ const [enRelacion, setEnRelacion] = useState(false);
                 const file = e.target.files[0];
                 if (!file) return;
                 const reader = new FileReader();
-                reader.onload = ev => setForm(f => ({ ...f, foto: ev.target.result }));
+                reader.onload = ev => {
+                  const img = new Image();
+                  img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const maxSize = 400;
+                    let w = img.width, h = img.height;
+                    if (w > h && w > maxSize) { h = (h * maxSize) / w; w = maxSize; }
+                    else if (h > maxSize) { w = (w * maxSize) / h; h = maxSize; }
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    setForm(f => ({ ...f, foto: canvas.toDataURL('image/jpeg', 0.7) }));
+                  };
+                  img.src = ev.target.result;
+                };
                 reader.readAsDataURL(file);
               }} />
             </label>
