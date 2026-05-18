@@ -1069,7 +1069,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
 
               {/* Cápsula del día */}
               <div style={{ background: "#1a1a2e", borderRadius: 14, padding: 16, marginBottom: 12 }}>
-                <div style={{ fontSize: 11, color: "#FFD93D", fontWeight: 700, letterSpacing: 1, marginBottom: 12 }}>🌍 CÁPSULA DEL DÍA QUE NACIÓ</div>
+                <div style={{ fontSize: 11, color: "#FFD93D", fontWeight: 700, letterSpacing: 1, marginBottom: 12 }}>🌍 CÁPSULA DEL DÍA QUE LLEGASTE AL MUNDO</div>
                 {!capsula && !capsulaLoading && (
                   <button onClick={() => handleDescubrirDia(persona)} style={{
                     width: "100%", background: "linear-gradient(135deg, #FFD93D22, #FF6B6B22)",
