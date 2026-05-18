@@ -1076,7 +1076,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
                     border: "1px solid #FFD93D55", borderRadius: 10, padding: "12px",
                     color: "#FFD93D", fontSize: 14, fontWeight: 700, cursor: "pointer"
                   }}>
-                    ✨ Descubrir mi día
+                    ✨ Que pasaba el día que Naciste ✨
                   </button>
                 )}
                 {capsulaLoading && (
@@ -1129,7 +1129,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
               {/* ── TÓNALI MEXICA ─────────────────────────────────────── */}
               <div style={{ background: "#1a1a2e", borderRadius: 14, padding: 16, marginBottom: 12 }}>
                 <div style={{ fontSize: 11, color: "#FFB347", fontWeight: 700, letterSpacing: 1, marginBottom: 12 }}>
-                  🦅 TÓNALI — CALENDARIO MEXICA
+                  🦅 TÓNALI — CALENDARIO MEXICA 🦅
                 </div>
 
                 {!tonaliVisible && (
@@ -1139,7 +1139,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
                     border: "1px solid #FFB34755", borderRadius: 10, padding: "12px",
                     color: "#FFB347", fontSize: 14, fontWeight: 700, cursor: "pointer"
                   }}>
-                    🌀 Descubrir mi signo mexica
+                    🌀 Descubrir mi signo Mexica 🌀
                   </button>
                 )}
 
@@ -1342,7 +1342,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
                         <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.7, marginBottom: 10 }}>
                           "No llores por mí, un día vendré a verte,<br />convertido en un bonito colibrí." 🪶
                         </div>
-                        <div style={{ fontSize: 10, color: "#00C9A7", letterSpacing: 1, cursor: "pointer", fontWeight: 700 }} onClick={() => setShowAuthor(true)}>— -=ArtMoreno=-</div>
+                        <div style={{ fontSize: 10, color: "#00C9A7", letterSpacing: 1, cursor: "pointer", fontWeight: 700 }} onClick={() => setShowAuthor(true)}>  -=ArtMoreno=-</div>
                       </div>
 
                       <button onClick={() => setTonaliVisible(false)}
@@ -1396,7 +1396,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
               {/* ── LECTURA DEL ALMA — REGISTROS AKÁSHICOS ─────────── */}
               <div style={{ background: "#1a1a2e", borderRadius: 14, padding: 16, marginBottom: 12 }}>
                 <div style={{ fontSize: 11, color: "#00C9A7", fontWeight: 700, letterSpacing: 1, marginBottom: 12 }}>
-                  🌌 LECTURA DEL ALMA — REGISTROS AKÁSHICOS
+                  🌌 LECTURA DEL ALMA — REGISTROS AKÁSHICOS 🌌
                 </div>
 
                 {!akashic && !akashicLoading && (
@@ -1406,7 +1406,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
                     border: "1px solid #00C9A755", borderRadius: 10, padding: "12px",
                     color: "#00C9A7", fontSize: 14, fontWeight: 700, cursor: "pointer"
                   }}>
-                    🌌 Abrir mi Registro Akáshico
+                    🌌 Abrir mi Registro Akáshico 🌌
                   </button>
                 )}
 
@@ -1463,7 +1463,7 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
                           textAlign: "center", marginTop: 8,
                           fontSize: 10, color: "#00C9A7", letterSpacing: 1,
                           cursor: "pointer", fontWeight: 700
-                        }}>— -=ArtMoreno=-</div>
+                        }}>  -=ArtMoreno=-</div>
 
                       <button onClick={() => setAkashic(null)}
                         style={{ background: "none", border: "none", color: "#444", fontSize: 11, cursor: "pointer", marginTop: 8 }}>
