@@ -407,14 +407,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!loggedIn) return;
-    fetch(`${API}/personas`, {
-      headers: { Authorization: `Bearer ${token}` }
+  if (!loggedIn) return;
+  fetch(`${API}/personas`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(r => {
+      if (r.status === 401) {
+        // Token inválido — cerrar sesión limpiamente
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        setToken('');
+        setUsuario('');
+        setLoggedIn(false);
+        return null;
+      }
+      return r.json();
     })
-      .then(r => r.json())
-      .then(data => setPersonas(data.map(p => ({ ...p, fecha: p.fecha.split("T")[0] }))))
-      .catch(err => console.error(err));
-  }, [loggedIn, token]);
+    .then(data => {
+      if (data) setPersonas(data.map(p => ({ ...p, fecha: p.fecha.split("T")[0] })));
+    })
+    .catch(err => console.error(err));
+}, [loggedIn, token]);
 
   const sorted = [...personas]
     .filter(p => p.nombre.toLowerCase().includes(search.toLowerCase()))
