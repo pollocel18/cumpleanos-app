@@ -160,7 +160,7 @@ Perteneces al universo "Despertar — No es lo que esperabas". Tu propósito es 
     console.error('QUIROMANTE ERROR:', e.message);
     res.status(500).json({ error: e.message });
   }
-
+});
 
 app.get('/', (req, res) => res.json({ mensaje: '¡Servidor de cumpleaños funcionando!' }));
 
