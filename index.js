@@ -8,6 +8,15 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// Verificación de API secret para endpoints de IA
+const verificarSecret = (req, res, next) => {
+  const secret = req.headers['x-api-secret'];
+  if (!secret || secret !== process.env.API_SECRET_KEY) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+  next();
+};
+
 // Auth - sin protección
 app.post('/login', login);
 app.post('/register', register);
@@ -42,7 +51,7 @@ app.delete('/personas/:id', verificar, async (req, res) => {
 });
 
 // ── Cápsula del día — llamada a Anthropic desde el servidor ──────────────────
-app.post('/api/capsula', verificar, async (req, res) => {
+app.post('/api/capsula', verificar, verificarSecret, async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) return res.status(400).json({ error: 'Falta el prompt' });
 
@@ -73,7 +82,7 @@ app.post('/api/capsula', verificar, async (req, res) => {
 });
 
 // ── Registros Akáshicos — llamada a Anthropic desde el servidor ──────────────
-app.post('/api/akashic', verificar, async (req, res) => {
+app.post('/api/akashic', verificar, verificarSecret, async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) return res.status(400).json({ error: 'Falta el prompt' });
 
@@ -103,7 +112,7 @@ app.post('/api/akashic', verificar, async (req, res) => {
   }
 });
 
-app.post('/api/quiromante', async (req, res) => {
+app.post('/api/quiromante', verificarSecret, async (req, res) => {
   const { messages } = req.body;
   if (!messages) return res.status(400).json({ error: 'Faltan los mensajes' });
 
