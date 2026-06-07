@@ -156,10 +156,10 @@ Perteneces al universo "Despertar — No es lo que esperabas". Tu propósito es 
       messages: messages,
     });
     res.json({ respuesta: response.content[0].text });
-  } catch (e) {
+} catch (e) {
+    console.error('QUIROMANTE ERROR:', e.message);
     res.status(500).json({ error: e.message });
   }
-});
 
 
 app.get('/', (req, res) => res.json({ mensaje: '¡Servidor de cumpleaños funcionando!' }));
