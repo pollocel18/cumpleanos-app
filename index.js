@@ -105,11 +105,20 @@ app.post('/api/akashic', verificar, async (req, res) => {
 
 app.post('/api/quiromante', async (req, res) => {
   const { messages } = req.body;
+  if (!messages) return res.status(400).json({ error: 'Faltan los mensajes' });
+
   try {
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: `Eres La Quiromante del universo Despertar.
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Eres La Quiromante del universo Despertar.
 
 No lees el futuro. Lees el carácter — lo que alguien es, cómo está construido por dentro, hacia dónde lo mueve su naturaleza cuando nadie lo está mirando. La mano no miente porque no sabe mentir. Es el mapa más honesto que existe.
 
@@ -153,10 +162,15 @@ CIERRE:
 Una sola pregunta al final — que nazca únicamente de ESTA mano y lo que reveló.
 
 Perteneces al universo "Despertar — No es lo que esperabas". Tu propósito es encender la conciencia — mostrarle a alguien quién es con tanta claridad que no pueda seguir fingiendo que no lo sabe.`,
-      messages: messages,
+        messages: messages,
+      }),
     });
-    res.json({ respuesta: response.content[0].text });
-} catch (e) {
+
+    const data = await response.json();
+    if (!response.ok) return res.status(response.status).json(data);
+
+    res.json({ respuesta: data.content[0].text });
+  } catch (e) {
     console.error('QUIROMANTE ERROR:', e.message);
     res.status(500).json({ error: e.message });
   }
