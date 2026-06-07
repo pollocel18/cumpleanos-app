@@ -287,10 +287,14 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
 }`;
 
   const response = await fetch(`${API}/api/capsula`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ prompt }),
-  });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    'x-api-secret': process.env.REACT_APP_API_SECRET,
+  },
+  body: JSON.stringify({ prompt }),
+});
 
   if (!response.ok) throw new Error('Error al generar la cápsula');
   return response.json();
@@ -331,11 +335,15 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
   "mensaje": "Un mensaje directo e íntimo del Registro para esta persona — 2 a 3 oraciones que solo podrían ser para ella."
 }`;
 
-  const response = await fetch(`${API}/api/akashic`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ prompt }),
-  });
+ const response = await fetch(`${API}/api/akashic`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    'x-api-secret': process.env.REACT_APP_API_SECRET,
+  },
+  body: JSON.stringify({ prompt }),
+});
 
   if (!response.ok) throw new Error('Error al abrir el registro');
   return response.json();
