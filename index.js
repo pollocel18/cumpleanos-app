@@ -21,6 +21,45 @@ const verificarSecret = (req, res, next) => {
 app.post('/login', login);
 app.post('/register', register);
 
+// Contador de consultas
+app.post('/api/consulta', verificarSecret, async (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) return res.status(400).json({ error: 'user_id requerido' });
+
+  try {
+    // Buscar usuario en usuarios_hub
+    const result = await pool.query(
+      'SELECT consultas_usadas FROM usuarios_hub WHERE id = $1',
+      [user_id]
+    );
+
+    if (result.rows.length === 0) {
+      // Primera vez — crear registro
+      await pool.query(
+        'INSERT INTO usuarios_hub (id, email, consultas_usadas) VALUES ($1, $2, 1)',
+        [user_id, req.body.email || '']
+      );
+      return res.json({ consultas_usadas: 1, permitido: true });
+    }
+
+    const consultas = result.rows[0].consultas_usadas;
+
+    if (consultas >= 3) {
+      return res.json({ consultas_usadas: consultas, permitido: false });
+    }
+
+    await pool.query(
+      'UPDATE usuarios_hub SET consultas_usadas = consultas_usadas + 1 WHERE id = $1',
+      [user_id]
+    );
+
+    return res.json({ consultas_usadas: consultas + 1, permitido: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 // Rutas protegidas
 app.get('/personas', verificar, async (req, res) => {
   const result = await pool.query('SELECT * FROM personas WHERE user_id=$1 ORDER BY id ASC', [req.user.id]);
