@@ -44,9 +44,13 @@ app.post('/api/consulta', verificarSecret, async (req, res) => {
 
     const consultas = result.rows[0].consultas_usadas;
 
-    if (consultas >= 3) {
-      return res.json({ consultas_usadas: consultas, permitido: false });
-    }
+    if (result.rows[0].rol === 'admin') {
+  return res.json({ consultas_usadas: consultas, permitido: true });
+}
+
+if (consultas >= 3) {
+  return res.json({ consultas_usadas: consultas, permitido: false });
+}
 
     await pool.query(
       'UPDATE usuarios_hub SET consultas_usadas = consultas_usadas + 1 WHERE id = $1',
