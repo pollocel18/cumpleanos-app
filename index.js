@@ -64,6 +64,32 @@ if (consultas >= 3) {
   }
 });
 
+// Obtener rol de usuario
+app.get('/api/rol', verificarSecret, async (req, res) => {
+  const { user_id } = req.query;
+  if (!user_id) return res.status(400).json({ error: 'user_id requerido' });
+
+  try {
+    const result = await pool.query(
+      'SELECT rol, consultas_usadas FROM usuarios_hub WHERE id = $1',
+      [user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({ rol: 'usuario', consultas_usadas: 0 });
+    }
+
+    return res.json({
+      rol: result.rows[0].rol,
+      consultas_usadas: result.rows[0].consultas_usadas
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+
 // Rutas protegidas
 app.get('/personas', verificar, async (req, res) => {
   const result = await pool.query('SELECT * FROM personas WHERE user_id=$1 ORDER BY id ASC', [req.user.id]);
