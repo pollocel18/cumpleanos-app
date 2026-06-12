@@ -29,7 +29,7 @@ app.post('/api/consulta', verificarSecret, async (req, res) => {
   try {
     // Buscar usuario en usuarios_hub
     const result = await pool.query(
-      'SELECT consultas_usadas FROM usuarios_hub WHERE id = $1',
+      'SELECT consultas_usadas, rol FROM usuarios_hub WHERE id = $1',
       [user_id]
     );
 
@@ -43,14 +43,17 @@ app.post('/api/consulta', verificarSecret, async (req, res) => {
     }
 
     const consultas = result.rows[0].consultas_usadas;
+    const rol = result.rows[0].rol;
 
-    if (result.rows[0].rol === 'admin') {
-  return res.json({ consultas_usadas: consultas, permitido: true });
-}
+    // Admin siempre puede
+    if (rol === 'admin') {
+      return res.json({ consultas_usadas: consultas, permitido: true });
+    }
 
-if (consultas >= 3) {
-  return res.json({ consultas_usadas: consultas, permitido: false });
-}
+    // Usuario normal — verificar límite
+    if (consultas >= 3) {
+      return res.json({ consultas_usadas: consultas, permitido: false });
+    }
 
     await pool.query(
       'UPDATE usuarios_hub SET consultas_usadas = consultas_usadas + 1 WHERE id = $1',
