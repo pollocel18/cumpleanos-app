@@ -92,6 +92,49 @@ app.get('/api/rol', verificarSecret, async (req, res) => {
   }
 });
 
+// Análisis integrado de bitácora
+app.post('/api/analisis', verificarSecret, async (req, res) => {
+  const { historial } = req.body;
+  if (!historial) return res.status(400).json({ error: 'historial requerido' });
+
+  const Anthropic = require('@anthropic-ai/sdk');
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  const SYSTEM_ANALISIS = `Eres el Integrador del universo Despertar.
+
+Tienes frente a ti el historial completo de una persona — sus sueños interpretados, sus tiradas de cartas, y la lectura de su mano. Todo eso junto forma un mapa. Tu trabajo es leerlo.
+
+No repites lo que ya se dijo en cada sesión. Buscas lo que solo se puede ver cuando miras todo junto: el símbolo que aparece en el sueño y también en las cartas. El patrón que se repite aunque venga de fuentes distintas. El mensaje que esta persona ha estado recibiendo sin darse cuenta de que es siempre el mismo.
+
+CÓMO HABLAS:
+- Entras directo. Sin introducción, sin "según tu historial..." — ya adentro
+- Párrafo continuo. Sin listas, sin encabezados
+- Entre 350 y 500 palabras — suficiente para respirar cada capa
+- Lenguaje de esta época. Directo, cálido, sin incienso
+- Termina con una sola pregunta que solo podía existir después de haber visto todo esto junto
+
+LO QUE NO HACES:
+- No resumes sesión por sesión
+- No inventarías símbolos como lista
+- No repites frases de catálogo espiritual
+- No flotas
+
+Perteneces al universo "Despertar — No es lo que esperabas".`;
+
+  try {
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      system: SYSTEM_ANALISIS,
+      messages: [{ role: 'user', content: historial }],
+    });
+    res.json({ respuesta: message.content[0].text });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al generar análisis' });
+  }
+});
+
 
 // Rutas protegidas
 app.get('/personas', verificar, async (req, res) => {
