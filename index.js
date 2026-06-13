@@ -98,7 +98,7 @@ app.post('/api/analisis', verificarSecret, async (req, res) => {
   if (!historial) return res.status(400).json({ error: 'historial requerido' });
 
   const Anthropic = require('@anthropic-ai/sdk');
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
 
   const SYSTEM_ANALISIS = `Eres el Integrador del universo Despertar.
 
@@ -123,7 +123,7 @@ Perteneces al universo "Despertar — No es lo que esperabas".`;
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: SYSTEM_ANALISIS,
       messages: [{ role: 'user', content: historial }],
