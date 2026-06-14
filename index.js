@@ -134,10 +134,16 @@ Perteneces al universo "Despertar — No es lo que esperabas".`;
     res.status(500).json({ error: 'Error al generar análisis' });
   }
 });
-
-// ── Tónali + Akáshicos para perfil de cliente ─────────────────────────────
 app.post('/api/tonali-perfil', verificarSecret, async (req, res) => {
-const promptTonali = `Fecha de nacimiento: ${fecha_nacimiento}
+  const { fecha_nacimiento } = req.body;
+  if (!fecha_nacimiento) return res.status(400).json({ error: 'fecha_nacimiento requerida' });
+
+  // ... todos los arrays SIGNOS_TONALPOHUALLI, SEÑORES_NOCHE, etc ...
+  // ... cálculo de jdn, tpDia, numero, signo, etc ...
+  // ... const tonali = { numero, signo, señorNoche, numAño, signoAño }; ...
+
+  // Aquí va el prompt — DESPUÉS de calcular todo
+  const promptTonali = `Fecha de nacimiento: ${fecha_nacimiento}
 Tónali Mexica: ${numero} ${signo.nombre} ${signo.emoji} — ${signo.desc}
 Señor de la Noche: ${señorNoche.nombre} — ${señorNoche.desc}
 Año: ${numAño} ${signoAño.nombre} ${signoAño.emoji}
@@ -151,6 +157,15 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
   "arquetipo": "El arquetipo que representa esta alma — nombra el arquetipo y explícalo en 2 a 3 oraciones.",
   "mensaje": "Un mensaje directo e íntimo del Registro para esta persona — 2 a 3 oraciones que solo podrían ser para ella."
 }`;
+
+  // Registros Akáshicos con Claude
+  const Anthropic = require('@anthropic-ai/sdk');
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
+
+  try {
+    // ... el mensaje a Claude ...
+  }
+});
 
 // Cálculo del Tónali
   const SIGNOS_TONALPOHUALLI = [
