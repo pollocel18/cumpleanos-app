@@ -238,8 +238,17 @@ Genera un registro akáshico breve para esta persona — 150 palabras máximo. V
       messages: [{ role: 'user', content: promptTonali }],
     });
 
-    const raw = message.content[0].text.trim().replace(/```json|```/g, '').trim();
-const akashico = JSON.parse(raw);
+    let akashico;
+try {
+  const raw = message.content[0].text.trim().replace(/```json|```/g, '').trim();
+  akashico = JSON.parse(raw);
+} catch(parseErr) {
+  console.error('JSON parse error:', message.content[0].text);
+  akashico = { 
+    proposito: message.content[0].text,
+    dones: "", karma: "", arquetipo: "", mensaje: "" 
+  };
+}
 
 res.json({
   tonali,
