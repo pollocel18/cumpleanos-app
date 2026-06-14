@@ -137,10 +137,23 @@ Perteneces al universo "Despertar — No es lo que esperabas".`;
 
 // ── Tónali + Akáshicos para perfil de cliente ─────────────────────────────
 app.post('/api/tonali-perfil', verificarSecret, async (req, res) => {
-  const { fecha_nacimiento } = req.body;
-  if (!fecha_nacimiento) return res.status(400).json({ error: 'fecha_nacimiento requerida' });
+const prompt = `Fecha de nacimiento: ${fecha_nacimiento}
+Tónali Mexica: ${numero} ${signo.nombre} ${signo.emoji} — ${signo.desc}
+Señor de la Noche: ${señorNoche.nombre} — ${señorNoche.desc}
+Año: ${numAño} ${signoAño.nombre} ${signoAño.emoji}
 
-  // Cálculo del Tónali
+Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin texto adicional, sin markdown, sin backticks:
+
+{
+  "proposito": "El propósito del alma en esta encarnación — 3 a 4 oraciones íntimas y específicas basadas en los datos.",
+  "dones": "Los dones y talentos traídos desde vidas anteriores — 3 a 4 oraciones poéticas y específicas.",
+  "karma": "Los patrones kármicos o aprendizajes pendientes — 3 a 4 oraciones honestas y compasivas.",
+  "arquetipo": "El arquetipo que representa esta alma — nombra el arquetipo y explícalo en 2 a 3 oraciones.",
+  "mensaje": "Un mensaje directo e íntimo del Registro para esta persona — 2 a 3 oraciones que solo podrían ser para ella."
+}`;
+
+
+// Cálculo del Tónali
   const SIGNOS_TONALPOHUALLI = [
     { nombre: "Cipactli", emoji: "🐊", desc: "Caimán — Fuerza primordial, origen del mundo, energía creadora." },
     { nombre: "Ehecatl", emoji: "💨", desc: "Viento — Mensajero de los dioses, movilidad, transformación." },
@@ -226,10 +239,14 @@ Genera un registro akáshico breve para esta persona — 150 palabras máximo. V
       messages: [{ role: 'user', content: prompt }],
     });
 
-    res.json({
-      tonali,
-      akashico: message.content[0].text,
-    });
+    const raw = message.content[0].text.trim().replace(/```json|```/g, '').trim();
+const akashico = JSON.parse(raw);
+
+res.json({
+  tonali,
+  akashico,
+});
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al calcular' });
