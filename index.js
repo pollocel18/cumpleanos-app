@@ -135,6 +135,107 @@ Perteneces al universo "Despertar — No es lo que esperabas".`;
   }
 });
 
+// ── Tónali + Akáshicos para perfil de cliente ─────────────────────────────
+app.post('/api/tonali-perfil', verificarSecret, async (req, res) => {
+  const { fecha_nacimiento } = req.body;
+  if (!fecha_nacimiento) return res.status(400).json({ error: 'fecha_nacimiento requerida' });
+
+  // Cálculo del Tónali
+  const SIGNOS_TONALPOHUALLI = [
+    { nombre: "Cipactli", emoji: "🐊", desc: "Caimán — Fuerza primordial, origen del mundo, energía creadora." },
+    { nombre: "Ehecatl", emoji: "💨", desc: "Viento — Mensajero de los dioses, movilidad, transformación." },
+    { nombre: "Calli", emoji: "🏠", desc: "Casa — Refugio, introspección, mundo interior profundo." },
+    { nombre: "Cuetzpalin", emoji: "🦎", desc: "Lagartija — Agilidad, adaptación, vitalidad renovada." },
+    { nombre: "Coatl", emoji: "🐍", desc: "Serpiente — Sabiduría ancestral, dualidad, renacimiento." },
+    { nombre: "Miquiztli", emoji: "💀", desc: "Muerte — Transformación, tránsito entre mundos, ciclo eterno." },
+    { nombre: "Mazatl", emoji: "🦌", desc: "Venado — Gracia, intuición, conexión con la naturaleza." },
+    { nombre: "Tochtli", emoji: "🐇", desc: "Conejo — Abundancia, fertilidad, alegría desbordante." },
+    { nombre: "Atl", emoji: "💧", desc: "Agua — Fluidez, purificación, vida y movimiento constante." },
+    { nombre: "Itzcuintli", emoji: "🐕", desc: "Perro — Lealtad, guía hacia el inframundo, compañerismo." },
+    { nombre: "Ozomatli", emoji: "🐒", desc: "Mono — Arte, juego, ingenio y creatividad sin límites." },
+    { nombre: "Malinalli", emoji: "🌿", desc: "Hierba — Resiliencia, renacimiento, lo que no puede ser destruido." },
+    { nombre: "Acatl", emoji: "🎋", desc: "Caña — Sabiduría de Quetzalcóatl, conocimiento y la palabra." },
+    { nombre: "Ocelotl", emoji: "🐆", desc: "Jaguar — Poder nocturno, guerrero de la oscuridad, misterio." },
+    { nombre: "Cuauhtli", emoji: "🦅", desc: "Águila — Visión solar, liderazgo, vuela más alto que todos." },
+    { nombre: "Cozcacuauhtli", emoji: "🦅", desc: "Buitre — Sabiduría de los ancianos, paciencia y longevidad." },
+    { nombre: "Ollin", emoji: "🌀", desc: "Movimiento — El signo del sol actual, destino en acción." },
+    { nombre: "Tecpatl", emoji: "🔪", desc: "Pedernal — Sacrificio, voluntad cortante, verdad sin filtro." },
+    { nombre: "Quiahuitl", emoji: "🌧️", desc: "Lluvia — Dones del cielo, fertilidad, la voz de Tlaloc." },
+    { nombre: "Xochitl", emoji: "🌸", desc: "Flor — Belleza, arte, amor y el florecimiento del alma." },
+  ];
+  const SEÑORES_NOCHE = [
+    { nombre: "Xiuhtecuhtli", desc: "Señor del Fuego — el más antiguo, eje del cosmos, transformación." },
+    { nombre: "Itztli", desc: "Obsidiana — filo de la verdad, claridad que corta lo superficial." },
+    { nombre: "Piltzintecuhtli", desc: "Señor Joven — el sol niño, energía fresca y renovación." },
+    { nombre: "Centeotl", desc: "Dios del Maíz — sustento, abundancia, lo que nutre al mundo." },
+    { nombre: "Mictlantecuhtli", desc: "Señor de los Muertos — profundidad, lo que existe más allá." },
+    { nombre: "Chalchiuhtlicue", desc: "Falda de Jade — aguas en movimiento, fluidez emocional, protección." },
+    { nombre: "Tlazolteotl", desc: "Diosa de la Tierra — purificación, pasión, lo que se transforma." },
+    { nombre: "Tepeyollotl", desc: "Corazón del Monte — el jaguar del eco, la voz que resuena." },
+    { nombre: "Tlaloc", desc: "Dios de la Lluvia — los dones del cielo, la vida que viene de arriba." },
+  ];
+  const SIGNOS_AÑO = [
+    { nombre: "Tochtli", emoji: "🐇", desc: "Conejo" },
+    { nombre: "Acatl", emoji: "🎋", desc: "Caña" },
+    { nombre: "Tecpatl", emoji: "🔪", desc: "Pedernal" },
+    { nombre: "Calli", emoji: "🏠", desc: "Casa" },
+  ];
+
+  function fechaAJDN(dia, mes, anio) {
+    if (mes <= 2) { anio -= 1; mes += 12; }
+    const A = Math.floor(anio / 100);
+    const B = 2 - A + Math.floor(A / 4);
+    return Math.floor(365.25 * (anio + 4716)) + Math.floor(30.6001 * (mes + 1)) + dia + B - 1524;
+  }
+
+  const parts = fecha_nacimiento.split("-");
+  const anio = parseInt(parts[0]);
+  const mes = parseInt(parts[1]);
+  const dia = parseInt(parts[2]);
+
+  const GMT = 584283;
+  const jdn = fechaAJDN(dia, mes, anio);
+  const tpDia = ((jdn - GMT) % 260 + 260) % 260;
+  const numero = (tpDia % 13) + 1;
+  const signoIndex = tpDia % 20;
+  const signo = SIGNOS_TONALPOHUALLI[signoIndex];
+  const señorNocheIndex = ((jdn - GMT) % 9 + 9) % 9;
+  const señorNoche = SEÑORES_NOCHE[señorNocheIndex];
+  const añosTranscurridos = Math.floor((jdn - GMT) / 365);
+  const numAño = (((añosTranscurridos % 13) + 13) % 13) + 1;
+  const signoAñoIndex = ((añosTranscurridos % 4) + 4) % 4;
+  const signoAño = SIGNOS_AÑO[signoAñoIndex];
+
+  const tonali = { numero, signo, señorNoche, numAño, signoAño };
+
+  // Registros Akáshicos con Claude
+  const Anthropic = require('@anthropic-ai/sdk');
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
+
+  const prompt = `Fecha de nacimiento: ${fecha_nacimiento}
+Tónali Mexica: ${numero} ${signo.nombre} ${signo.emoji}
+Señor de la Noche: ${señorNoche.nombre} — ${señorNoche.desc}
+Año: ${numAño} ${signoAño.nombre} ${signoAño.emoji}
+
+Genera un registro akáshico breve para esta persona — 150 palabras máximo. Voz directa, sin incienso. Habla de su misión, su energía base y el reto principal que trajo al nacer. Sin listas, párrafo continuo.`;
+
+  try {
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 512,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    res.json({
+      tonali,
+      akashico: message.content[0].text,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al calcular' });
+  }
+});
+
 
 // Rutas protegidas
 app.get('/personas', verificar, async (req, res) => {
