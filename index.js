@@ -137,7 +137,7 @@ Perteneces al universo "Despertar — No es lo que esperabas".`;
 
 // ── Tónali + Akáshicos para perfil de cliente ─────────────────────────────
 app.post('/api/tonali-perfil', verificarSecret, async (req, res) => {
-const prompt = `Fecha de nacimiento: ${fecha_nacimiento}
+const promptTonali = `Fecha de nacimiento: ${fecha_nacimiento}
 Tónali Mexica: ${numero} ${signo.nombre} ${signo.emoji} — ${signo.desc}
 Señor de la Noche: ${señorNoche.nombre} — ${señorNoche.desc}
 Año: ${numAño} ${signoAño.nombre} ${signoAño.emoji}
@@ -151,7 +151,6 @@ Responde ÚNICAMENTE con un objeto JSON con exactamente esta estructura, sin tex
   "arquetipo": "El arquetipo que representa esta alma — nombra el arquetipo y explícalo en 2 a 3 oraciones.",
   "mensaje": "Un mensaje directo e íntimo del Registro para esta persona — 2 a 3 oraciones que solo podrían ser para ella."
 }`;
-
 
 // Cálculo del Tónali
   const SIGNOS_TONALPOHUALLI = [
@@ -236,7 +235,7 @@ Genera un registro akáshico breve para esta persona — 150 palabras máximo. V
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 512,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: promptTonali }],
     });
 
     const raw = message.content[0].text.trim().replace(/```json|```/g, '').trim();
